@@ -2,9 +2,9 @@
 Modelo para dias de cielo despejado a partir de la ecuacion de irradiancia 
 solar extraterrestre
 """
-
-from .extraterrestrial_solar import extraterrestial_solar_model
 from pandas import DataFrame, to_datetime
+from .GHI_model import GHI_model
+from .RS_model import RS_model
 
 
 class clear_sky_model:
@@ -12,8 +12,7 @@ class clear_sky_model:
         """
         Creacion del modelo
         """
-        # Inicializacion del modelo
-        self.model = extraterrestial_solar_model()
+        pass
 
     def run(self, params: dict) -> DataFrame:
         """
@@ -35,6 +34,8 @@ class clear_sky_model:
         --------------------
         DataFrame con los valores de irradiancia minuto a minuto
         """
+        # Inicializacion del modelo
+        self._select_model(params)
         # Inicializacion de los resultados
         results = DataFrame(columns=["H0"])
         # Hora inicial
@@ -60,6 +61,15 @@ class clear_sky_model:
         # Formateo de la fecha
         results.index = to_datetime(results.index)
         return results
+
+    def _select_model(self,
+                      params: dict) -> None:
+        if params["clear sky model"] == "GHI":
+            self.model = GHI_model()
+            return
+        if params["clear sky model"] == "RS":
+            self.model = RS_model()
+            return
 
     def _get_time(self, minutes: int) -> str:
         """
